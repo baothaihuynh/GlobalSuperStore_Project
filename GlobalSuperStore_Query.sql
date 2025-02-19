@@ -104,9 +104,8 @@ SELECT
 		SUM(CASE WHEN Shipping_Cost <= 0 THEN 1 ELSE 0 END) AS Shipping_Cost_Zero_Count
 FROM Global_Superstore
 ---> There are 13212 values in Profit and 2 values in Shipping_Cost less than zero value.
----> Đây là một vấn đề kinh doanh bình thường khi các hạng mục với mức chi phí cao hơn so với doanh thu gây từ đó tác động đến lợi nhuận âm
----> Các giá trị trong các cột còn lại không mang giá trị bé hơn hoặc bằng 0 là hoàn toàn phù hợp
-
+---> This is a normal business issue when items with higher costs than revenue impact profitability, leading to negative profit.
+---> The values in the remaining columns not being less than or equal to 0 is completely appropriate.
 
 -- 5. Check overview datatype
 EXEC sp_help 'Global_Superstore';
@@ -209,7 +208,7 @@ GROUP BY Order_Priority
 ORDER BY COUNT(Order_Priority)
 
 
--- Question 5: Thời gian giao hàng phổ biến nhất
+-- Question 5: Most common delivery time
 WITH Time_Ship
 AS (
 SELECT OrderID, DATEDIFF(DAY, Order_Date, Ship_Date) AS Time_Ship_Days
@@ -254,7 +253,7 @@ GROUP BY Customer_Info.FirstBuy_Year
 ORDER BY Customer_Info.FirstBuy_Year
 
 
--- Question 8: Có bao nhiêu Phân loại (Segment) khách hàng, số lượng khách hàng, doanh thu và tỷ trọng trong mỗi Segment như thế nào?
+-- Question 8: How many customer segments are there, and what are the number of customers, revenue, and proportion in each segment?
 WITH Total_Segment
 AS
 (
@@ -274,7 +273,7 @@ ORDER BY COUNT(Segment)
 
 
 -- Dimension: Place
--- Question 9: Công ty hoạt động ở những thị trường nào, số quốc gia ở mỗi trị và doanh thu mang lại của từng thị trường đó?
+-- Question 9: In which markets does the company operate, how many countries are in each market, and what is the revenue generated from each market?
 WITH Total_Sales
 AS
 (
@@ -303,7 +302,7 @@ GROUP BY Product_ID, Product_Name
 ORDER BY SUM(Quantity) DESC
 
 
--- Question 11: Nhóm ngành hàng chủ đạo của công ty? (Doanh thu và tỷ trọng của từng Category)
+-- Question 11: What are the company's main product categories? (Revenue and proportion of each category)
 WITH Summaries
 AS 
 (
@@ -324,7 +323,7 @@ ORDER BY SUM(Quantity)
 
 
 -- Question 12: 
--- Top 5 sản phẩm có giá bán cao nhất?
+-- Top 5 highest-priced products?
 SELECT TOP 5 Product_ID,
 	   Product_Name,
 	   Category,
@@ -333,7 +332,7 @@ FROM Data_Cleaned
 GROUP BY Product_ID, Product_Name, Category
 ORDER BY AVG(Unit_Price) DESC
 
--- Top 5 sản phẩm có giá bán thấp nhất
+-- Top 5 lowest-priced products?
 SELECT TOP 5 Product_ID,
 	   Product_Name,
 	   Category,
@@ -345,7 +344,7 @@ ORDER BY AVG(Unit_Price) ASC
 
 
 -- Dimension: Sales
--- Question 13: Số lượng sản phẩm bán ra, Chi phí ship, Doanh thu và lợi nhuận qua từng năm
+-- Question 13: The number of products sold, shipping costs, revenue, and profit over the years.
 SELECT YEAR(Order_Date) AS 'Year',
 	   SUM(Quantity) AS Total_Quantity,
 	   SUM(Shipping_Cost) AS Total_ShippingCost,
@@ -356,7 +355,7 @@ GROUP BY YEAR(Order_Date)
 ORDER BY YEAR(Order_Date)
 
 
--- Question 14: Doanh thu theo ngày trong tuần?
+-- Question 14: Revenue by day of the week?
 SELECT DATENAME(WEEKDAY, Order_Date) AS WeekDayName,
 	   SUM(Sales) AS Total_Sales
 FROM Data_Cleaned
@@ -364,7 +363,7 @@ GROUP BY DATENAME(WEEKDAY, Order_Date)
 ORDER BY SUM(Sales) DESC
 
 
--- Question 15: Tỷ lệ Discount phổ biến?
+-- Question 15: Most common discount rates?
 SELECT Discount, COUNT(Discount) AS Cnt_Discount
 FROM Data_Cleaned
 GROUP BY Discount
